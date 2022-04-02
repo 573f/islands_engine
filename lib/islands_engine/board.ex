@@ -1,8 +1,18 @@
 defmodule IslandsEngine.Board do
+  @moduledoc """
+  The Board contains the players Islands, and acts as a broker for Island operations.
+  A complete board has one Island of each valid type.
+  """
   alias IslandsEngine.{Island, Coordinate}
 
+  @doc """
+  Creates a new board (implemented as an empty Map).
+  """
   def new(), do: %{}
 
+  @doc """
+  Adds a new Island to the Board, provided the new Island does not overlap an existing island.
+  """
   def position_island(board, key, %Island{} = island) do
     case overlaps_existing_island?(board, key, island) do
       true -> {:error, :overlapping_island}
@@ -10,8 +20,19 @@ defmodule IslandsEngine.Board do
     end
   end
 
+  @doc """
+  Determines if the Board is complete (i.e. contains one of each valid Island type)
+  """
   def all_islands_positioned?(board), do: Enum.all?(Island.types(), &Map.has_key?(board, &1))
 
+  @doc """
+  Does the specified Coordinate intersect any of the Board's Islands?
+  The reponse includes:
+    - :hit or :miss
+    - Island forested or :none
+    - :win or :no_win
+    - resulting board
+  """
   def guess(board, %Coordinate{} = coordinate) do
     board
     |> check_all_islands(coordinate)
